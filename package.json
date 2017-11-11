@@ -1,0 +1,30 @@
+{
+  "name": "hat",
+  "version": "1.0.0",
+  "description": "Histological analysis of tissues",
+  "main": "lib/index.js",
+  "scripts": {
+    "prestart": "eslint src --fix --cache",
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vpanteleev/Hat.git"
+  },
+  "author": "vovapanteleev@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vpanteleev/Hat/issues"
+  },
+  "homepage": "https://github.com/vpanteleev/Hat#readme",
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "nodemon": "^1.12.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
