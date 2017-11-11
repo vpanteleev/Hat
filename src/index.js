@@ -11,6 +11,8 @@ app.use(fileUpload({
 app.post('/upload', async (req, res) => {
 	const lenna = await jimp.read(req.files.file.data);
 
+	console.log(jimp.intToRGBA(lenna.getPixelColor(5, 5)));
+
 	lenna.resize(256, 256)
 		.quality(60)
 		.greyscale()
