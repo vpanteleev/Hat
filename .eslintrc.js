@@ -2,6 +2,7 @@ module.exports = {
     "extends": "airbnb-base",
     "rules": {
         "indent": ["error", "tab"],
-        "no-tabs": 0
+        "no-tabs": 0,
+        "no-param-reassign": 0,
     }
 };

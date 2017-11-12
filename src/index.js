@@ -1,6 +1,7 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const jimp = require('jimp');
+
+const { getBinaryImage, getClosedAreas } = require('./imageProcessor');
 
 const app = express();
 
@@ -9,16 +10,24 @@ app.use(fileUpload({
 }));
 
 app.post('/upload', async (req, res) => {
-	const lenna = await jimp.read(req.files.file.data);
+	const { binaryImage, width, height } = await getBinaryImage(req.files.file.data);
 
-	console.log(jimp.intToRGBA(lenna.getPixelColor(5, 5)));
+	const labledImage = getClosedAreas(binaryImage, width, height);
 
-	lenna.resize(256, 256)
-		.quality(60)
-		.greyscale()
-		.write('lena-small-bw.jpg');
+	let maxLabel = 0;
+	labledImage.forEach((line) => {
+		line.forEach((labelNumber) => {
+			if (labelNumber > maxLabel) {
+				maxLabel = labelNumber;
+			}
+		});
+	});
 
-	res.send('File uploaded!');
+	// await drawLabledImage(req.files.file.data, labledImage);
+
+	console.log(maxLabel);
+
+	res.send('Uspeshno');
 });
 
 app.get('/', (req, res) => {
