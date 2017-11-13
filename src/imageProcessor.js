@@ -1,4 +1,5 @@
 const jimp = require('jimp');
+const _ = require('lodash');
 
 function getMatrix(width, height) {
 	const matrix = new Array(width);
@@ -149,9 +150,51 @@ function getObjects(labledImage) {
 	return objects;
 }
 
+function getObjectsParameters(objects) {
+	const parameters = _.mapValues(objects, (object) => {
+		const xCoordinates = object.map(({ x }) => x);
+		const yCoordinates = object.map(({ y }) => y);
+		const maxX = Math.max(...xCoordinates);
+		const minX = Math.min(...xCoordinates);
+
+		const maxY = Math.max(...yCoordinates);
+		const minY = Math.min(...yCoordinates);
+
+		const width = maxX - minX;
+		const height = maxY - minY;
+
+		const square = object.length;
+
+		return { width, height, square };
+	});
+
+	return parameters;
+}
+
+async function drawClassifyedImage(imageBuffer, labledImage, classifyedData) {
+	const sourceImage = await jimp.read(imageBuffer);
+	const image = sourceImage.clone();
+	const { bitmap: { width, height } } = image;
+
+	const typeColors = {
+		erythrocyte: 0xff0000ff, // Red
+		leukocyte: 0xffffffff, // White
+	};
+
+	image.scan(0, 0, width, height, (x, y) => {
+		const { type } = classifyedData[labledImage[x][y]] || {};
+		if (labledImage[x][y] && type) {
+			image.setPixelColor(typeColors[type], x, y);
+		}
+	})
+		.write('preprocessed/classifyed.jpg');
+}
+
 module.exports = {
 	getBinaryImage,
 	getLabledImage,
 	drawLabledImage,
 	getObjects,
+	getObjectsParameters,
+	drawClassifyedImage,
 };
