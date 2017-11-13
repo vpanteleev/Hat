@@ -1,7 +1,11 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 
-const { getBinaryImage, getClosedAreas } = require('./imageProcessor');
+const {
+	getBinaryImage, getLabledImage, drawLabledImage, getObjects,
+} = require('./imageProcessor');
+
+const Network = require('./neuralNetwork');
 
 const app = express();
 
@@ -12,20 +16,15 @@ app.use(fileUpload({
 app.post('/upload', async (req, res) => {
 	const { binaryImage, width, height } = await getBinaryImage(req.files.file.data);
 
-	const labledImage = getClosedAreas(binaryImage, width, height);
+	const labledImage = getLabledImage(binaryImage, width, height);
 
-	let maxLabel = 0;
-	labledImage.forEach((line) => {
-		line.forEach((labelNumber) => {
-			if (labelNumber > maxLabel) {
-				maxLabel = labelNumber;
-			}
-		});
-	});
+	const objects = getObjects(labledImage);
 
-	// await drawLabledImage(req.files.file.data, labledImage);
+	console.log(objects);
+	const neuralNetwork = new Network();
 
-	console.log(maxLabel);
+	console.log(neuralNetwork);
+	await drawLabledImage(req.files.file.data, labledImage);
 
 	res.send('Uspeshno');
 });
